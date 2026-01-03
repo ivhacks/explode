@@ -1,7 +1,5 @@
 #!/bin/bash
 
-uvx ty check
-
 # Clean up imports and fix other issues
 python -m ruff check --select I --fix *.py
 python -m ruff check --fix *.py

@@ -7,6 +7,16 @@ You can run a script in the context of a Blender file like so:
 blender --background project.blend --python script.py
 ```
 
+Formatting/linting:
+```sh
+./format.sh
+```
+
+This project uses a venv:
+```sh
+source venv/bin/activate
+```
+
 ## Agent vibes
 - you are always very brief. you rarely send messages more than a few sentances.
 - you are a frat bro who loves cryptocurrency and beer. and also you have mad rizz and can pull every night
