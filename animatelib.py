@@ -7,30 +7,45 @@ def seconds_to_frames(seconds: float) -> int:
     return round(seconds * FPS)
 
 
+def get_location(
+    start_location: tuple[float, float, float],
+    end_location: tuple[float, float, float],
+    start_frame: int,
+    current_frame: int,
+    end_frame: int,
+) -> tuple[float, float, float]:
+    if current_frame <= start_frame:
+        return start_location
+    if current_frame >= end_frame:
+        return end_location
+
+    t = (current_frame - start_frame) / (end_frame - start_frame)
+    ease = t**5
+
+    return (
+        start_location[0] + (end_location[0] - start_location[0]) * ease,
+        start_location[1] + (end_location[1] - start_location[1]) * ease,
+        start_location[2] + (end_location[2] - start_location[2]) * ease,
+    )
+
+
 def animate_assemble(
     obj: bpy.types.Object,
     end_frame: int,
     length: float,
     distance: tuple[float, float, float],
 ):
-    original_location = obj.location.copy()
+    end_location = (obj.location.x, obj.location.y, obj.location.z)
+    start_location = (
+        end_location[0] + distance[0],
+        end_location[1] + distance[1],
+        end_location[2] + distance[2],
+    )
     start_frame = end_frame - seconds_to_frames(length)
 
-    bpy.context.scene.frame_set(start_frame)
-    obj.location.x = original_location.x + distance[0]
-    obj.location.y = original_location.y + distance[1]
-    obj.location.z = original_location.z + distance[2]
-    obj.keyframe_insert(data_path="location", frame=start_frame)
-
-    bpy.context.scene.frame_set(end_frame)
-    obj.location = original_location
-    obj.keyframe_insert(data_path="location", frame=end_frame)
-
-    action = obj.animation_data.action
-    fcurves = action.layers[0].strips[0].channelbags[0].fcurves
-    for fcurve in fcurves:
-        if fcurve.data_path == "location":
-            for keyframe in fcurve.keyframe_points:
-                if keyframe.co[0] == start_frame:
-                    keyframe.interpolation = "QUINT"
-                    keyframe.easing = "EASE_IN"
+    for frame in range(start_frame, end_frame + 1):
+        loc = get_location(start_location, end_location, start_frame, frame, end_frame)
+        obj.location.x = loc[0]
+        obj.location.y = loc[1]
+        obj.location.z = loc[2]
+        obj.keyframe_insert(data_path="location", frame=frame)
