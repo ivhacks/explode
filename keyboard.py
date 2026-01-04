@@ -8,7 +8,7 @@ import bpy
 from animatelib import animate_assemble, seconds_to_frames
 
 STAGGER_SECONDS = 0.02
-DISTANCE = 2.0
+DISTANCE = (0.0, 0.0, 2.0)
 LENGTH = 1.0
 
 esc = bpy.data.objects["esc"]

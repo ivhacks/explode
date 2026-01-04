@@ -8,17 +8,22 @@ def seconds_to_frames(seconds: float) -> int:
 
 
 def animate_assemble(
-    obj: bpy.types.Object, end_frame: int, length: float, distance: float
+    obj: bpy.types.Object,
+    end_frame: int,
+    length: float,
+    distance: tuple[float, float, float],
 ):
-    original_z = obj.location.z
+    original_location = obj.location.copy()
     start_frame = end_frame - seconds_to_frames(length)
 
     bpy.context.scene.frame_set(start_frame)
-    obj.location.z = original_z + distance
+    obj.location.x = original_location.x + distance[0]
+    obj.location.y = original_location.y + distance[1]
+    obj.location.z = original_location.z + distance[2]
     obj.keyframe_insert(data_path="location", frame=start_frame)
 
     bpy.context.scene.frame_set(end_frame)
-    obj.location.z = original_z
+    obj.location = original_location
     obj.keyframe_insert(data_path="location", frame=end_frame)
 
     action = obj.animation_data.action
